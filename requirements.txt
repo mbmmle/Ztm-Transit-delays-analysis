@@ -1,3 +1,4 @@
 psycopg2-binary>=2.9.0
 SQLAlchemy>=2.0.0
 findspark
+pyspark-stubs>=3.2.0
