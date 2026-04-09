@@ -7,6 +7,7 @@ db_properties = {
     "rewriteBatchedInserts": "true",
     "batchsize": "50000",
     "numPartitions": "16",
+    "fetchsize": "10000"
 }
 
 DB_CONFIG = {
