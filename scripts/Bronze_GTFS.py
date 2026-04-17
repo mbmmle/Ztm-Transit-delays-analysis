@@ -18,6 +18,7 @@ api_key = os.getenv("WARSAW_API_KEY")
 import psycopg2
 import zipfile
 import urllib.request
+from pathlib import Path
 
 try:
     gtfs_url = "https://mkuran.pl/gtfs/warsaw.zip" 
@@ -63,6 +64,27 @@ df_trips = spark.read.csv(f"{extract_path}/trips.txt", header=True)
 
 df_trips.write.jdbc(url=jdbc_url, table="bronze.trips", \
                          mode="overwrite", properties=db_properties)
+
+
+shapes_path = Path(extract_path) / "shapes.txt"
+if shapes_path.exists():
+    df_shapes = spark.read.csv(str(shapes_path), header=True)
+    df_shapes.write.jdbc(
+        url=jdbc_url,
+        table="bronze.shapes",
+        mode="overwrite",
+        properties=db_properties,
+    )
+
+calendar_path = Path(extract_path) / "calendar.txt"
+if calendar_path.exists():
+    df_calendar = spark.read.csv(str(calendar_path), header=True)
+    df_calendar.write.jdbc(
+        url=jdbc_url,
+        table="bronze.calendar",
+        mode="overwrite",
+        properties=db_properties,
+    )
 
 
 

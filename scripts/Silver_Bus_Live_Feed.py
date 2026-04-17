@@ -38,7 +38,14 @@ except Exception as e:
 if df_rt.empty:
     sys.exit(99)
 
-df_rt['time_gps'] = pd.to_datetime(df_rt['time_gps_raw'], unit='s')
+print(f"[Silver_Bus_Live_Feed] GTFS-RT records fetched: {len(df_rt)}")
+
+# GTFS-RT vehicle timestamp is Unix epoch in UTC; convert to Europe/Warsaw local time.
+df_rt['time_gps'] = (
+    pd.to_datetime(df_rt['time_gps_raw'], unit='s', utc=True)
+    .dt.tz_convert('Europe/Warsaw')
+    .dt.tz_localize(None)
+)
 df_rt = df_rt.drop(columns=['time_gps_raw', 'route_id'])
 df_rt['etl_timestamp'] = pd.Timestamp.now()
 
@@ -48,4 +55,5 @@ df_rt['gps_id'] = [hashlib.md5(x.encode('utf-8')).hexdigest() for x in hash_inpu
 df_rt = df_rt[['gps_id', 'trip_id', 'lat', 'lon', 'vehicle_number', 'time_gps', 'etl_timestamp']]
 
 df_rt.to_sql('bus_live_feed', engine,schema='silver', if_exists='append', index=False)
+print(f"[Silver_Bus_Live_Feed] Records written to silver.bus_live_feed: {len(df_rt)}")
 

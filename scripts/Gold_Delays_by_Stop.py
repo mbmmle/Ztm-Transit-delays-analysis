@@ -2,23 +2,29 @@
 
 import findspark
 findspark.init()
+from config import db_properties,jdbc_url, SPARK_MEMORY, DB_CONFIG
 from pyspark.sql import SparkSession
+import psycopg2
 spark = SparkSession.builder \
     .appName("Warsaw_Bus_Project") \
     .config("spark.jars.packages", "org.postgresql:postgresql:42.6.0") \
-    .config("spark.driver.memory", "4g") \
+    .config("spark.driver.memory", SPARK_MEMORY) \
     .config("spark.sql.shuffle.partitions", "200") \
     .getOrCreate()
 
 import sys
 import gc
 sys.path.append('../work')
-from config import db_properties,jdbc_url
+
 import os
 os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
 from pyspark.sql import functions as F
 
-df_bus_delays = spark.read.jdbc(url=jdbc_url, table="gold.bus_delays", properties=db_properties)
+df_bus_delays = spark.read.jdbc(
+  url=jdbc_url,
+  table="(SELECT * FROM gold.bus_delays WHERE time_gps >= NOW() - INTERVAL '15 minutes') AS recent_bus_delays",
+  properties=db_properties,
+)
 
 df_bus_delays = df_bus_delays.withColumn("weighted_delay_minutes",F.when(F.col("stop_sequence")<=3 
                                                     ,F.col("delay_minutes")*0.5)
@@ -47,7 +53,29 @@ df_bus_delays = df_bus_delays.groupBy(F.window(F.col('time_gps'), "1 minute"),
                                     .drop("window")\
                                     .orderBy("window_start", "stop_name")
 
-df_bus_delays.write.jdbc(url=jdbc_url, table="delays_by_stop", mode="overwrite", properties=db_properties)
+row_count = df_bus_delays.count()
+print(f"[Gold_Delays_by_Stop] Aggregated rows for last 15 minutes: {row_count}")
+
+conn = psycopg2.connect(**DB_CONFIG)
+conn.autocommit = False
+cur = conn.cursor()
+cur.execute(
+    """
+    DO $$
+    BEGIN
+        IF to_regclass('public.delays_by_stop') IS NOT NULL THEN
+            DELETE FROM public.delays_by_stop
+            WHERE window_start >= NOW() - INTERVAL '15 minutes';
+        END IF;
+    END $$;
+    """
+)
+conn.commit()
+cur.close()
+conn.close()
+
+df_bus_delays.write.jdbc(url=jdbc_url, table="gold.delays_by_stop", mode="append", properties=db_properties)
+print(f"[Gold_Delays_by_Stop] Rows written to delays_by_stop: {row_count}")
 
 spark.catalog.clearCache()
 gc.collect()

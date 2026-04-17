@@ -26,17 +26,21 @@ with DAG(
     fetch_rt = BashOperator(
         task_id='fetch_gtfs_rt',
         bash_command='python3 /opt/airflow/scripts/Silver_Bus_Live_Feed.py',
-        skip_on_exit_code=99
+        skip_on_exit_code=99,
+        retries=0,
+        priority_weight=100
     )
 
     match_silver = BashOperator(
         task_id='match_silver_layer',
-        bash_command='python3 /opt/airflow/scripts/Silver_Bus_Matched.py'
+        bash_command='python3 /opt/airflow/scripts/Silver_Bus_Matched.py',
+        priority_weight=100
     )
 
     calc_gold = BashOperator(
         task_id='calculate_gold_delays',
-        bash_command='python3 /opt/airflow/scripts/Gold_Bus_Delays.py'
+        bash_command='python3 /opt/airflow/scripts/Gold_Bus_Delays.py',
+        priority_weight=100
     )
 
 

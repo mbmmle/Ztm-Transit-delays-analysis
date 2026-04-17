@@ -40,18 +40,21 @@ with DAG(
         task_id='run_spark_bronze_gtfs',
         python_callable=run_script_in_pyspark,
         op_kwargs={"script_name": "Bronze_GTFS.py"},
+        priority_weight=10,
     )
 
     build_silver_layer = PythonOperator(
         task_id='run_spark_silver_gtfs',
         python_callable=run_script_in_pyspark,
         op_kwargs={"script_name": "Silver_GTFS.py"},
+        priority_weight=10,
     )
 
     build_schedule = PythonOperator(
         task_id='run_spark_master_schedule',
         python_callable=run_script_in_pyspark,
         op_kwargs={"script_name": "Silver_Master_Schedule.py"},
+        priority_weight=10,
     )
 
     build_bronze_layer >> build_silver_layer >> build_schedule

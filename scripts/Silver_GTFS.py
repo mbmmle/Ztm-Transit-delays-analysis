@@ -3,10 +3,11 @@
 import findspark
 findspark.init()
 from pyspark.sql import SparkSession
+from config import db_properties,DB_CONFIG,jdbc_url, SPARK_MEMORY
 spark = SparkSession.builder \
     .appName("Warsaw_Bus_Project") \
     .config("spark.jars.packages", "org.postgresql:postgresql:42.6.0") \
-    .config("spark.driver.memory", "4g") \
+    .config("spark.driver.memory", SPARK_MEMORY) \
     .config("spark.sql.shuffle.partitions", "200") \
     .getOrCreate()
 
@@ -14,7 +15,7 @@ import sys
 import gc
 from pathlib import Path
 sys.path.append('../work')
-from config import db_properties,DB_CONFIG,jdbc_url
+
 import os
 os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
 from pyspark.sql.types import FloatType, IntegerType, BooleanType
