@@ -4,3 +4,4 @@ findspark
 pyspark-stubs
 geopandas
 shapely
+gtfs-realtime-bindings
