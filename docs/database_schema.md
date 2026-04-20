@@ -141,5 +141,5 @@ This document provides a short description of the tables used in the bus data pi
 - Preserve primary key / uniqueness constraints in `gold.bus_delays` (`gps_id, stop_id, time_gps`) when performing deduplication.
 
 ---
+Generated automatically from `docs/lucidchart/silver_gold_schema.sql` and `docs/lucidchart/gold_schema.sql`. Rewieved by hand for accuracy.
 
-Generated automatically from `docs/lucidchart/silver_gold_schema.sql` and `docs/lucidchart/gold_schema.sql`.
