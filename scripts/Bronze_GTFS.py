@@ -1,5 +1,23 @@
 ﻿# Auto-generated from notebook: work/Bronze/Bronze_GTFS.ipynb
 
+"""
+Bronze GTFS ingestion script.
+
+This job downloads the latest Warsaw GTFS zip package from the external feed,
+extracts source text files, and loads them into the Bronze schema in Postgres.
+It is designed to be a raw landing step: data is ingested with minimal
+transformation so downstream Silver jobs can apply typing, enrichment, and
+quality rules.
+
+Main outputs:
+- bronze.stop_times
+- bronze.stops
+- bronze.routes
+- bronze.trips
+- bronze.shapes (if present in source)
+- bronze.calendar (if present in source)
+"""
+
 import findspark
 findspark.init()
 from pyspark.sql import SparkSession

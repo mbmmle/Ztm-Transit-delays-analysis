@@ -34,14 +34,15 @@ with DAG(
     match_silver = BashOperator(
         task_id='match_silver_layer',
         bash_command='python3 /opt/airflow/scripts/Silver_Bus_Matched.py',
+        skip_on_exit_code=99,
         priority_weight=100
     )
 
     calc_gold = BashOperator(
         task_id='calculate_gold_delays',
         bash_command='python3 /opt/airflow/scripts/Gold_Bus_Delays.py',
+        skip_on_exit_code=99,
         priority_weight=100
     )
-
 
     fetch_rt >> match_silver >> calc_gold

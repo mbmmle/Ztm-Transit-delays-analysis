@@ -1,3 +1,12 @@
+"""
+Shared runtime configuration for batch and streaming scripts.
+
+This module centralizes connection settings for PostgreSQL and Spark-related
+JDBC options used across Bronze, Silver, and Gold jobs. Values are intentionally
+simple and environment-driven where needed (for example DB host) so the same
+code can run in local and containerized environments.
+"""
+
 import os
 DB_HOST = os.getenv("DB_HOST", "localhost")
 jdbc_url = f"jdbc:postgresql://{DB_HOST}:5432/Warsaw_Bus_DB"

@@ -1,5 +1,20 @@
 ﻿# Auto-generated from notebook: work/Silver/Silver_GTFS.ipynb
 
+"""
+Silver GTFS normalization and enrichment pipeline.
+
+This script reads raw GTFS entities from Bronze tables, applies data typing,
+filters bus routes, enriches stops with district information using spatial join,
+normalizes stop_times timestamps to full datetime values, and writes curated
+transport-reference tables into the Silver schema.
+
+Main outputs:
+- silver.stops
+- silver.routes
+- silver.trips
+- silver.stop_times
+"""
+
 import findspark
 findspark.init()
 from pyspark.sql import SparkSession
@@ -41,6 +56,18 @@ df_stops_silver = df_stops_bronze.select(
                 .withColumn("stop_id",F.col("stop_id").cast(IntegerType()))\
                 .withColumn("stop_lat",F.col("stop_lat").cast(FloatType()))\
                 .withColumn("stop_lon",F.col("stop_lon").cast(FloatType()))
+
+# Append stop platform/bay number to stop_name (e.g., "Dw. Centralny 01").
+stop_code_digits = F.regexp_extract(F.coalesce(F.col("stop_code"), F.lit("")), r"(\d+)$", 1)
+stop_code_2d = F.when(F.length(stop_code_digits) > 0, F.lpad(stop_code_digits, 2, "0"))
+
+df_stops_silver = df_stops_silver.withColumn(
+    "stop_name",
+    F.when(
+        stop_code_2d.isNotNull() & (~F.col("stop_name").rlike(r"\s\d{2}$")),
+        F.concat(F.trim(F.col("stop_name")), F.lit(" "), stop_code_2d),
+    ).otherwise(F.col("stop_name")),
+)
 
 pdf_stops = df_stops_silver.select("stop_id", "stop_lat", "stop_lon").toPandas()
 geometry = [Point(xy) for xy in zip(pdf_stops.stop_lon, pdf_stops.stop_lat)]
