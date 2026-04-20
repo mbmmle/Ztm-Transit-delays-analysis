@@ -119,10 +119,10 @@ flowchart TB
      s2:::gold
      s3:::gold
      DB1:::teal
-    classDef violet stroke:#a78bfa,fill:#f5f3ff
-    classDef indigo stroke:#818cf8,fill:#eef2ff
-    classDef teal stroke:#2dd4bf,fill:#f0fdfa
-    classDef orange stroke:#fb923c,fill:#fff7ed
-    classDef sky stroke:#38bdf8,fill:#f0f9ff
-    classDef gold stroke:#facc15,fill:#fefce8
+    classDef violet stroke:#a78bfa
+    classDef indigo stroke:#818cf8
+    classDef teal stroke:#2dd4bf
+    classDef orange stroke:#fb923c
+    classDef sky stroke:#38bdf8
+    classDef gold stroke:#facc15
 ```
