@@ -1,6 +1,6 @@
 # Database schema documentation — `silver` and `gold`
 
-This document provides a short description of the tables used in the bus data pipeline. It covers the *silver* schema (raw/processed GTFS and live feed data) and the *gold* schema (computed delays and aggregations).
+This document provides a short description of the tables used in the bus data pipeline. It covers the *silver* schema (processed GTFS and live feed data) and the *gold* schema (computed delays and aggregations).
 
 ## Schema: silver
 
@@ -72,8 +72,9 @@ This document provides a short description of the tables used in the bus data pi
   - **lat**, **lon**, **time_gps** — in the original file stored as TEXT.
   - **stop_id**, **arrival_time**, **stop_sequence**, **stop_lat**, **stop_lon** — matched stop and schedule data.
   - **distance_meters**, **moved_meters_last3**, **is_moving_last3** — movement metrics.
-  - **next_stop_1_id..next_stop_5_sequence** — upcoming stop information.
-- **Note**: Many fields in `bus_matched` are stored as TEXT — consider normalizing types (numeric / TIMESTAMP) for downstream computations.
+  - **next_stop_1_id..next_stop_N_sequence** — upcoming stop information.
+  Amount of next stops depends on PARAMEER `NEXT_STOP_COUNT` used in the matching process.
+
 
 ## Schema: gold
 
@@ -136,10 +137,7 @@ This document provides a short description of the tables used in the bus data pi
 - `gold.fleet.stop_id` → `silver.stops(stop_id)`
 
 ## Notes and recommendations
-- `silver` is intended as the raw / processed layer; `gold` is the enriched and aggregated layer — design ETL processes to avoid overwriting raw data.
-- Consider normalizing types in `silver.bus_matched` (e.g., convert TEXT fields to numeric / TIMESTAMP) for reliable downstream analytics.
-- Preserve primary key / uniqueness constraints in `gold.bus_delays` (`gps_id, stop_id, time_gps`) when performing deduplication.
-
+- `bronze` is raw layer ;`silver`is processed layer; `gold` is the enriched and aggregated layer — design ETL processes to avoid overwriting raw data.
 ---
 Generated automatically from `docs/lucidchart/silver_gold_schema.sql` and `docs/lucidchart/gold_schema.sql`. Rewieved by hand for accuracy.
 

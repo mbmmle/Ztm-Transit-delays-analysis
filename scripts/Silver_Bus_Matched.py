@@ -17,10 +17,13 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 from config import DB_CONFIG
-
+#Points of the last 3 observations to determine movement state (moving or not)
 LOOKBACK_POINTS = 3
+#Threshold in meters to consider a vehicle as moving
 MIN_MOVEMENT_METERS = 20.0
+#Count of Next stops to attach to the matched stop for future delay projection
 NEXT_STOP_COUNT = 5
+#Filters bus-stop matches with unrealistic distance between live point and stop location
 MAX_MATCH_DISTANCE_METERS = 1200.00
 
 

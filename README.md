@@ -1,3 +1,64 @@
+# Transit Delay Analysis - Warsaw Buses and Trams
+
+##  Project Overview
+This project focuses on creating a working data pipeline, capable of connecting live GPS data with the ZTM Warsaw schedule, to calculate delays for buses and trams in Warsaw. The delays are displayed and analyzed on real-time dashboards, providing on-map visualizations of delays by stop, as well as a fleet map showing the locations of vehicles and their delay status. 
+
+---
+
+## How to Use This Repository
+1. Clone the repository and navigate to the project directory.
+```bash
+   git clone [https://github.com/mbmmle/Ztm-Transit-delays-analisys](https://github.com/mbmmle/Ztm-Transit-delays-analisys)
+```
+2. Use docker compose in cloned folder to build and run the containers:
+```bash
+   docker-compose up --build
+```
+3. Access Airflow UI at `http://localhost:8080` to monitor DAGs and trigger them manually all 3:
+`warsaw_master_schedule_dag.py`, `warsaw_buses_live_dag.py`, `warsaw_minute_aggregation_dag.py`.
+4. Open `visualizations.pbix` to view real-time visualizations. You 
+---
+
+##  Tech Stack
+* **Docker** - for containerization
+* **PostgreSQL** - for DB storage and Power BI DirectQuery streaming
+* **Spark / PySpark** - for processing large GTFS data and aggregations
+* **pandas** - for matching data and calculating delays
+* **Geopandas** - for district mapping
+* **SQLAlchemy** - database engine for pandas
+* **Airflow** - for scheduling and orchestrating data pipelines
+* **Power BI** - for real-time dashboards and visualizations
+
+---
+
+##  Dashboards and Maps
+
+### Individual Stop Delay Map
+<p align="center">
+  <img src="docs/images/Stops.jpg" alt="Delays by Stop Dashboard" width="600"/>
+</p>
+
+### Heatmap Delay Map
+<p align="center">
+  <img src="docs/images/Heatmap.jpg" alt="Delays by District Dashboard" width="600"/>
+</p>
+
+### Fleet Map
+<p align="center">
+  <img src="docs/images/Fleet.jpg" alt="Fleet Map Dashboard" width="600"/>
+</p>
+
+---
+
+##  Data Architecture
+The database is built with PostgreSQL using the Medallion architecture, consisting of three layers:
+* **Bronze:** Raw data layer, storing unprocessed GTFS files.
+* **Silver:** Processed data layer, storing cleaned and structured GTFS data, live feed data, and matched data.
+* **Gold:** Data with business logic applied, storing calculated delays and aggregations by stop and district.
+
+<details = "ER Diagram">
+<summary><b>Silver_GTFS Data Storage Diagram </b></summary>
+
 ```mermaid
 ---
 config:
@@ -60,6 +121,110 @@ erDiagram
 	STOPS||--o{MASTER_SCHEDULE:"stop_id"
 	STOP_TIMES}|--|{MASTER_SCHEDULE:"trip_id"
 ```
+
+</details>
+
+<details = "ER Diagram">
+<summary><b>GPS and Delays Data Storage Diagram</b></summary>
+
+```mermaid
+%%{init: {"layout": "elk"}}%%
+erDiagram
+  BUS_LIVE_FEED {
+    TEXT gps_id PK
+    TEXT trip_id
+    DOUBLE lat
+    DOUBLE lon
+    TEXT vehicle_number
+    TIMESTAMP time_gps
+    TIMESTAMP etl_timestamp
+  }
+
+  BUS_MATCHED {
+    TEXT gps_id
+    TEXT vehicle_number
+    TEXT trip_id
+    TEXT route_id
+    TEXT lat
+    TEXT lon
+    TEXT time_gps
+    TEXT stop_id
+    TEXT arrival_time
+    TEXT stop_sequence
+    TEXT stop_lat
+    TEXT stop_lon
+    TEXT distance_meters
+    TEXT moved_meters_last3
+    TEXT is_moving_last3
+	TEXT next_stop_N_id
+	TEXT next_stop_N_sequence
+  }
+
+  BUS_DELAYS {
+    TEXT gps_id PK
+    TEXT trip_id
+    BIGINT stop_id
+    TEXT route_id
+    TEXT route_name
+    TEXT stop_name
+    TEXT district
+    DOUBLE gps_lat
+    DOUBLE gps_lon
+    TIMESTAMP time_gps PK
+    BIGINT delay_seconds
+    DOUBLE delay_minutes
+    DOUBLE distance
+    TIMESTAMP gold_timestamp
+  }
+
+  DELAYS_BY_STOP {
+    BIGINT stop_id PK
+    TEXT stop_name
+    DOUBLE stop_lat
+    DOUBLE stop_lon
+    TEXT district
+    DOUBLE average_delay_minutes
+    DOUBLE average_delay_seconds
+    DOUBLE max_delay_minutes
+    DOUBLE min_delay_minutes
+    BIGINT Bus_on_stop_count
+    TIMESTAMP window_start PK
+    TIMESTAMP window_end
+  }
+
+  DELAYS_BY_DISTRICT {
+    TEXT district PK
+    DOUBLE average_delay_minutes
+    DOUBLE average_delay_seconds
+    DOUBLE max_delay_minutes
+    DOUBLE min_delay_minutes
+    BIGINT Bus_on_stop_count
+    TIMESTAMP window_start PK
+    TIMESTAMP window_end
+  }
+
+  %% Color setup
+  classDef teal stroke:#2dd4bf,fill:#f0fdfa
+  classDef indigo stroke:#818cf8,fill:#eef2ff
+  classDef orange stroke:#fb923c,fill:#fff7ed
+  classDef gold stroke:#facc15,fill:#fefce8
+
+  class BUS_LIVE_FEED, BUS_MATCHED indigo
+  class BUS_DELAYS, DELAYS_BY_STOP, DELAYS_BY_DISTRICT gold
+```
+
+</details>
+For more inside on database schema, see [database_schema.md](docs/database_schema.md).
+
+---
+
+## Data Pipeline
+Orchestrated with Airflow, the data pipeline consists of three main DAGs:
+1. `warsaw_master_schedule_dag.py` - responsible for ingesting and processing GTFS data to populate the `silver` schema with schedule and stop information. Interval: everyday at 2:00 AM.
+1. `warsaw_buses_live_dag.py` - responsible for ingesting live GPS data, matching it to the schedule, and calculating delays. Interval: every minute.
+2. `warsaw_minute_aggregation_dag.py` - responsible for aggregating delays by stop and district on a minute-level basis for dashboard visualizations. Interval: every minute watits for `warsaw_buses_live_dag.py` to finish.
+
+### DAG Dependencies and Flow (LIVE FEED + DELAYS)
 
 ```mermaid
 ---
@@ -126,3 +291,13 @@ flowchart TB
     classDef sky stroke:#38bdf8
     classDef gold stroke:#facc15
 ```
+
+---
+
+## Data Sources
+* **warszawa-dzielnice.geojson** - for mapping stops to districts
+Source: https://github.com/andilabs/warszawa-dzielnice-geojson
+* **GTFS data and live GPS data** - for schedule and route information
+Source: https://mkuran.pl/gtfs/
+
+---
