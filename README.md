@@ -8,7 +8,7 @@ This project focuses on creating a working data pipeline, capable of connecting 
 ## How to Use This Repository
 1. Clone the repository and navigate to the project directory.
 ```bash
-   git clone [https://github.com/mbmmle/Ztm-Transit-delays-analisys](https://github.com/mbmmle/Ztm-Transit-delays-analisys)
+   git clone https://github.com/mbmmle/Ztm-Transit-delays-analysis.git
 ```
 2. Use docker compose in cloned folder to build and run the containers:
 ```bash
@@ -16,7 +16,12 @@ This project focuses on creating a working data pipeline, capable of connecting 
 ```
 3. Access Airflow UI at `http://localhost:8080` to monitor DAGs and trigger them manually all 3:
 `warsaw_master_schedule_dag.py`, `warsaw_buses_live_dag.py`, `warsaw_minute_aggregation_dag.py`.
-4. Open `visualizations.pbix` to view real-time visualizations. You 
+4. Open `visualizations.pbix` to view real-time visualizations. You may need to login to postgresql server to access the database, in order for visualizations to work.
+#### Credentials:
+   * Server: `localhost`
+   * Database: `Warsaw_Bus_DB`
+   * Username: `admin`
+   * Password: `admin`
 ---
 
 ##  Tech Stack
@@ -214,7 +219,8 @@ erDiagram
 ```
 
 </details>
-For more inside on database schema, see [database_schema.md](docs/database_schema.md).
+
+For more insight on database schema, see [database_schema.md](docs/database_schema.md).
 
 ---
 
