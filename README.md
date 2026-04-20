@@ -40,17 +40,17 @@ This project focuses on creating a working data pipeline, capable of connecting 
 
 ### Individual Stop Delay Map
 <p align="center">
-  <img src="docs/images/Stops.jpg" alt="Delays by Stop Dashboard" width="600"/>
+  <img src="docs/Images/Stops.jpg" alt="Delays by Stop Dashboard" width="600"/>
 </p>
 
 ### Heatmap Delay Map
 <p align="center">
-  <img src="docs/images/Heatmap.jpg" alt="Delays by District Dashboard" width="600"/>
+  <img src="docs/Images/Heatmap.jpg" alt="Delays by District Dashboard" width="600"/>
 </p>
 
 ### Fleet Map
 <p align="center">
-  <img src="docs/images/Fleet.jpg" alt="Fleet Map Dashboard" width="600"/>
+  <img src="docs/Images/Fleet.jpg" alt="Fleet Map Dashboard" width="600"/>
 </p>
 
 ---
