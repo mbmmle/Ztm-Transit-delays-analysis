@@ -93,17 +93,14 @@ This document provides a short description of the tables used in the bus data pi
   - **gold_timestamp** — record generation timestamp.
 - **PK**: `(gps_id, stop_id, time_gps)`.
 
-### gold.bus_delays_test_fix
-- **Description**: Test / fix copy of `bus_delays` used for experimentation; same structure as `bus_delays`.
-
 ### gold.delays_by_stop
 - **Description**: Aggregated delay metrics per stop over time windows.
 - **Columns**:
   - **stop_id**, **stop_name**, **stop_lat/stop_lon**, **district**.
   - **average_delay_minutes**, **average_delay_seconds**, **max_delay_minutes**, **min_delay_minutes**.
   - **Bus_on_stop_count** — number of measurements / vehicles observed at the stop.
-  - **average_weighted_delay_minutes/seconds** — weighted delay metrics.
-  - **window_start**, **window_end** — aggregation window.
+  - **average_weighted_delay_minutes/seconds** — weighted delay metrics, for first 3 stops of bus sequence the weight is 0.5, otherwise 1.
+  - **window_start**, **window_end** — aggregation window, in UTC time.
 - **PK**: `(stop_id, window_start)`.
 
 ### gold.delays_by_district

@@ -5,3 +5,8 @@ pyspark-stubs
 geopandas
 shapely
 gtfs-realtime-bindings
+streamlit
+langchain
+langchain_google_genai
+langchain-community
+requests

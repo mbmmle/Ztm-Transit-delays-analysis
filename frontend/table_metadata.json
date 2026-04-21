@@ -1,0 +1,57 @@
+{
+  "delays_by_district": {
+    "description": "Aggregated analytical view at the Warsaw district level. Use this table for queries regarding overall traffic conditions, comparing districts (e.g., 'where are the biggest traffic jams?', 'which district is the most delayed?'), and retrieving average and maximum delays in a given area. NOTE: This table does not contain data on individual stops - use the 'delays_by_stop' table for that.",
+    "columns": {
+      "district": "VARCHAR - Name of the Warsaw district (e.g., 'Mokotów', 'Praga-Południe', 'Wola').",
+      "average_delay_minutes": "FLOAT - Averaged delay for the entire district expressed in minutes (for user presentation).",
+      "average_delay_seconds": "INTEGER - Average delay in seconds (useful for precise analytical calculations).",
+      "max_delay_minutes": "FLOAT - The maximum single vehicle delay recorded in a given district.",
+      "min_delay_minutes": "FLOAT - The minimum single vehicle delay recorded in a given district.",
+      "bus_on_stop_count": "INTEGER - Number of measurements/vehicles observed in the district within the aggregation window.",
+      "average_weighted_delay_minutes": "FLOAT - Weighted average delay in minutes (weights applied to early stops where specified).",
+      "average_weighted_delay_seconds": "INTEGER - Weighted average delay in seconds.",
+      "window_start": "TIMESTAMP - Aggregation window start (UTC). - interval 1 minute",
+      "window_end": "TIMESTAMP - Aggregation window end (UTC). - interval 1 minute prefer to use this then window_start for filtering data based on time, as it represents the end of the aggregation period."
+    }
+  },
+  "delays_by_stop": {
+    "description": "Detailed operational aggregated table showing delays at the level of specific bus stop groups. Use it when the user asks about specific locations (e.g., 'what is the situation at the Centrum stop?'), looks for the worst-performing stops (bottlenecks) in a given district, or asks about bus traffic volume at a specific point. Always combine this knowledge with the 'district' column if the user narrows the query to a specific district.",
+    "columns": {
+      "district": "VARCHAR - Name of the district where the stop is located.",
+      "stop_id": "INTEGER - Stop identifier.",
+      "stop_name": "VARCHAR - Name of the bus stop group (e.g., 'Rondo Daszyńskiego 01', 'Dworzec Centralny 03', 'Metro Wilanowska'), with first word being stop name and numbers being stop signing numbers. ",
+      "stop_lat": "FLOAT - Latitude of the stop.",
+      "stop_lon": "FLOAT - Longitude of the stop.",
+      "bus_on_stop_count": "INTEGER - Traffic volume: the number of vehicles that passed this stop in the analyzed time window.",
+      "average_delay_minutes": "FLOAT - Average delay of vehicles departing from this specific stop.",
+      "average_delay_seconds": "INTEGER - Average delay in seconds (useful for analytics).",
+      "max_delay_minutes": "FLOAT - Maximum single-vehicle delay recorded at this stop.",
+      "min_delay_minutes": "FLOAT - Minimum single-vehicle delay recorded at this stop.",
+      "average_weighted_delay_minutes": "FLOAT - Weighted average delay in minutes (0,5 weights applied to first 3 stops).",
+      "average_weighted_delay_seconds": "INTEGER - Weighted average delay in seconds.",
+      "window_start": "TIMESTAMP - Aggregation window start (UTC). - interval 1 minute",
+      "window_end": "TIMESTAMP - Aggregation window end (UTC).  - interval 1 minute prefer to use this then window_start for filtering data based on time, as it represents the end of the aggregation period."
+    }
+  },
+  "fleet": {
+    "description": "Real-time telemetry table (Live). It contains the current GPS positions of individual ZTM vehicles (buses/trams) and their current delay on the route. Use it ONLY when the user asks about a specific vehicle (side number), wants to locate the fleet on a map, or asks about the operational status 'right now'.",
+    "columns": {
+      "vehicle_number": "VARCHAR - Unique vehicle side number (vehicle ID in the system)., to get the lane number like 166, 17, you need to remove V/ prefix and `/xx` stuffix from this column., e.g., for 'V/166/1' the lane number is 166. remeber that there can be multiple vehicles with same lane number, e.g., 'V/166/1' and 'V/166/2' are two different vehicles on the same lane.",
+      "route_id": "VARCHAR - Route identifier.",
+      "trip_id": "VARCHAR - Trip identifier.",
+      "gps_lat": "FLOAT - Latitude of the vehicle's current location.",
+      "gps_lon": "FLOAT - Longitude of the vehicle's current location.",
+      "time_gps": "TIMESTAMP - GPS measurement time (UTC).",
+      "delay_to_next_stop": "FLOAT - Current delay of the vehicle en route to the nearest stop (in minutes).",
+      "delay_seconds": "INTEGER - Current delay expressed in seconds (signed).",
+      "delay_minutes": "FLOAT - Current delay expressed in minutes.",
+      "is_delayed": "BOOLEAN - Whether the vehicle is considered delayed (true/false).",
+      "stop_id": "INTEGER - Current or nearest stop id.",
+      "stop_name": "VARCHAR - Name of the current/nearest stop.",
+      "stop_district": "VARCHAR - District where the stop is located.",
+      "stop_sequence": "INTEGER - Stop sequence number on the trip.",
+      "window_start": "TIMESTAMP - Snapshot window start (UTC). - interval 1 minute",
+      "window_end": "TIMESTAMP - Snapshot window end (UTC). - interval 1 minute prefer to use this then window_start for filtering data based on time, as it represents the end of the aggregation period."
+    }
+  }
+}

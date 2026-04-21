@@ -1,7 +1,8 @@
 # Transit Delay Analysis - Warsaw Buses and Trams
 
 ##  Project Overview
-This project focuses on creating a working data pipeline, capable of connecting live GPS data with the ZTM Warsaw schedule, to calculate delays for buses and trams in Warsaw. The delays are displayed and analyzed on real-time dashboards, providing on-map visualizations of delays by stop, as well as a fleet map showing the locations of vehicles and their delay status. 
+
+This project focuses on creating a working data pipeline, capable of connecting live GPS data with the ZTM Warsaw schedule, to calculate delays for buses and trams in Warsaw. The delays are displayed and analyzed on real-time dashboards, providing on-map visualizations of delays by stop, as well as a fleet map showing the locations of vehicles and their delay status. Buisness logic is applied to AI agent to provide fast and accurate answers to user without advanced knowleadge of the data structure. The project is built using Python, PostgreSQL, Spark, Airflow, and Power BI for visualizations + Gemini, LangChain and Streamlit for the AI agent.
 
 ---
 
@@ -14,10 +15,12 @@ This project focuses on creating a working data pipeline, capable of connecting 
 ```bash
    docker-compose up --build
 ```
-3. Access Airflow UI at `http://localhost:8080` to monitor DAGs and trigger them manually all 3:
+3. Access Airflow UI at http://localhost:8080 to monitor DAGs and trigger them manually all 3:
 `warsaw_master_schedule_dag.py`, `warsaw_buses_live_dag.py`, `warsaw_minute_aggregation_dag.py`.
 4. Open `visualizations.pbix` to view real-time visualizations. You may need to login to postgresql server to access the database, in order for visualizations to work.
-#### Credentials:
+5. In order to use the AI agent it is required to add your Gemini API key to the `.env example` file in the root of the project and rename it to `.env`. Then go to http://localhost:8505 and ask questions about the data. 
+
+#### Credentials for Power BI connection to PostgreSQL:
    * Server: `localhost`
    * Database: `Warsaw_Bus_DB`
    * Username: `admin`
@@ -33,10 +36,13 @@ This project focuses on creating a working data pipeline, capable of connecting 
 * **SQLAlchemy** - database engine for pandas
 * **Airflow** - for scheduling and orchestrating data pipelines
 * **Power BI** - for real-time dashboards and visualizations
-
+* **LangChain** - for building the AI agent to answer user queries based on the data
+* **Gemini** - for powering the language model behind the AI agent
+* **Streamlit** - for building the user interface of the AI agent
 ---
 
-##  Dashboards and Maps
+##  Features and Visualizations
+### The project includes three main dashboards and AI Agent Companion:
 
 ### Individual Stop Delay Map
 <p align="center">
@@ -51,6 +57,11 @@ This project focuses on creating a working data pipeline, capable of connecting 
 ### Fleet Map
 <p align="center">
   <img src="docs/images/Fleet.jpg" alt="Fleet Map Dashboard" width="600"/>
+</p>
+
+### AI Agent Chatbot
+<p align="center">
+  <img src="docs/images/Chatbot.jpg" alt="AI Agent Chatbot" width="600"/>
 </p>
 
 ---
