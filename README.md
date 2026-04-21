@@ -23,7 +23,10 @@ This project focuses on creating a working data pipeline, capable of connecting 
    * Username: `admin`
    * Password: `admin`
 ---
-5. WARNING: Notebooks in work directory are deprecated, scripts are working app components.
+
+**WARNING:** Notebooks in work directory are deprecated, scripts are working app components.
+
+---
 
 ##  Tech Stack
 * **Docker** - for containerization
