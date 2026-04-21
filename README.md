@@ -65,7 +65,7 @@ This project focuses on creating a working data pipeline, capable of connecting 
 
 ### AI Agent Chatbot
 <p align="center">
-  <img src="docs/images/Chatbot.jpg" alt="AI Agent Chatbot" width="600"/>
+  <img src="docs/Images/Chatbot.jpg" alt="AI Agent Chatbot" width="600"/>
 </p>
 
 ---
