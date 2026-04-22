@@ -3,6 +3,7 @@ SQLAlchemy>=2.0.0
 findspark
 pyspark-stubs
 geopandas
+numpy<2.0
 shapely
 gtfs-realtime-bindings
 streamlit
