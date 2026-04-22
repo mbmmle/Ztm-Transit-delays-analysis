@@ -28,4 +28,4 @@ DB_CONFIG = {
     "host": DB_HOST,
     "port": "5432",
 }
-SPARK_MEMORY = "6g"
+SPARK_MEMORY = "3g"
