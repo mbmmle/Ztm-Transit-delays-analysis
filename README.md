@@ -11,14 +11,18 @@ This project focuses on creating a working data pipeline, capable of connecting 
 ```bash
    git clone https://github.com/mbmmle/Ztm-Transit-delays-analysis.git
 ```
-2. Use docker compose in cloned folder to build and run the containers:
+2. Adjust Spark Meomry in `scripts\config.py`, "3g" is recomended for 16gb ram devices, "6g" on 32gb ram devices.
+```python
+	SPARK_MEMORY = "3g" #line 31
+```
+4. Use docker compose in cloned folder to build and run the containers:
 ```bash
    docker-compose up --build
 ```
-3. Access Airflow UI at http://localhost:8080 to monitor DAGs and trigger them manually all 3:
+4. Access Airflow UI at http://localhost:8080 to monitor DAGs and trigger them manually all 3:
 `warsaw_master_schedule_dag.py`, `warsaw_buses_live_dag.py`, `warsaw_minute_aggregation_dag.py`.
-4. Open `visualizations.pbix` to view real-time visualizations. You may need to login to postgresql server to access the database, in order for visualizations to work.
-5. In order to use the AI agent it is required to add your Gemini API key to the `.env example` file in the root of the project and rename it to `.env`. Then go to http://localhost:8505 and ask questions about the data. 
+5. Open `visualizations.pbix` to view real-time visualizations. You may need to login to postgresql server to access the database, in order for visualizations to work.
+6. In order to use the AI agent it is required to add your Gemini API key to the `.env example` file in the root of the project and rename it to `.env`. Then go to http://localhost:8505 and ask questions about the data. 
 
 #### Credentials for Power BI connection to PostgreSQL:
    * Server: `localhost`
