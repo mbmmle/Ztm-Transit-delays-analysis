@@ -290,6 +290,6 @@ with engine.begin() as conn:
         CREATE OR REPLACE VIEW gold.v_fleet AS
         SELECT *,
         window_end::date AS date,
-        window_end::time AS time
+        EXTRACT(HOUR FROM window_end) AS time
         FROM gold.fleet;
     """))

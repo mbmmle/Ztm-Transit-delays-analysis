@@ -129,7 +129,7 @@ with psycopg2.connect(**DB_CONFIG) as conn:
             SELECT 
                 *,
                 window_end::date AS date,
-                window_end::time AS time
+                EXTRACT(HOUR FROM window_end) AS time
             FROM gold.delays_by_district;
         """)
     conn.commit()
